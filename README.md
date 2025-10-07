@@ -21,19 +21,19 @@ MCP server that automatically manages WireGuard VPN connections and downloads vi
 
 ## Installation
 
-```bash
-# Install dependencies with uv (fast Python package installer)
-uv pip install -e .
+This project uses `uv` for dependency management. Install `uv` first if you don't have it:
 
-# Or if you prefer requirements.txt style
-uv pip install -r requirements.txt
-
-# Configure sudo permissions for WireGuard (see below)
-```
-
-**Note**: This project uses `uv` for faster dependency management. If you don't have `uv` installed:
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Then install dependencies:
+
+```bash
+# Install dependencies
+uv sync
+
+# Configure sudo permissions for WireGuard (see below)
 ```
 
 ## Sudo Configuration
