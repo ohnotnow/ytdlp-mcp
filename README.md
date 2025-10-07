@@ -49,15 +49,27 @@ username ALL=(ALL) NOPASSWD: /usr/bin/wg-quick
 
 ### Running the Server
 
+#### Network Mode (Recommended for Raspberry Pi)
+
+Run the server on your Raspberry Pi, accessible over LAN:
+
 ```bash
-# Run directly with Python
+# Start HTTP server (default: 0.0.0.0:8000)
 python server.py
 
 # Or with uv
 uv run server.py
+
+# Custom host/port
+python server.py --host 192.168.1.100 --port 8080
+
+# Run in background with systemd (recommended for Pi)
+# See systemd section below
 ```
 
-Or add to your Claude Desktop MCP config:
+Then configure Claude Desktop on your desktop/laptop to connect to the Pi:
+
+**Claude Desktop MCP config:**
 - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - **Linux**: `~/.config/claude/claude_desktop_config.json`
 
@@ -65,23 +77,61 @@ Or add to your Claude Desktop MCP config:
 {
   "mcpServers": {
     "yt-dlp-vpn": {
-      "command": "uv",
-      "args": ["run", "/home/ohffs/yt-api/server.py"]
+      "url": "http://192.168.1.100:8000/sse"
     }
   }
 }
 ```
 
-Or using Python directly (if dependencies are already installed):
+Replace `192.168.1.100` with your Raspberry Pi's LAN IP address.
+
+#### Local Mode (stdio)
+
+For local development or running on the same machine as Claude Desktop:
+
+```bash
+# Use stdio transport
+python server.py --transport stdio
+```
+
+**Claude Desktop config for local stdio:**
 ```json
 {
   "mcpServers": {
     "yt-dlp-vpn": {
       "command": "python",
-      "args": ["/home/ohffs/yt-api/server.py"]
+      "args": ["/home/ohffs/yt-api/server.py", "--transport", "stdio"]
     }
   }
 }
+```
+
+#### Running as a systemd service (Raspberry Pi)
+
+Create `/etc/systemd/system/yt-api.service`:
+
+```ini
+[Unit]
+Description=YT-DLP MCP Server with WireGuard VPN
+After=network.target
+
+[Service]
+Type=simple
+User=ohffs
+WorkingDirectory=/home/ohffs/yt-api
+ExecStart=/usr/bin/python3 /home/ohffs/yt-api/server.py --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable and start:
+```bash
+sudo systemctl enable yt-api
+sudo systemctl start yt-api
+sudo systemctl status yt-api
 ```
 
 ### Available Tools
