@@ -22,10 +22,18 @@ MCP server that automatically manages WireGuard VPN connections and downloads vi
 ## Installation
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
+# Install dependencies with uv (fast Python package installer)
+uv pip install -e .
+
+# Or if you prefer requirements.txt style
+uv pip install -r requirements.txt
 
 # Configure sudo permissions for WireGuard (see below)
+```
+
+**Note**: This project uses `uv` for faster dependency management. If you don't have `uv` installed:
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 ## Sudo Configuration
@@ -42,11 +50,29 @@ username ALL=(ALL) NOPASSWD: /usr/bin/wg-quick
 ### Running the Server
 
 ```bash
+# Run directly with Python
 python server.py
+
+# Or with uv
+uv run server.py
 ```
 
-Or add to your Claude Desktop MCP config (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+Or add to your Claude Desktop MCP config:
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Linux**: `~/.config/claude/claude_desktop_config.json`
 
+```json
+{
+  "mcpServers": {
+    "yt-dlp-vpn": {
+      "command": "uv",
+      "args": ["run", "/home/ohffs/yt-api/server.py"]
+    }
+  }
+}
+```
+
+Or using Python directly (if dependencies are already installed):
 ```json
 {
   "mcpServers": {

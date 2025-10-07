@@ -1,0 +1,10 @@
+[project]
+name = "yt-api"
+version = "0.1.0"
+description = "MCP server for yt-dlp with WireGuard VPN management"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastmcp>=2.12.4",
+    "yt-dlp>=2025.9.26",
+]
